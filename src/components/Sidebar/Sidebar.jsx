@@ -17,17 +17,16 @@
 */
 /*eslint-disable*/
 import React from "react";
+import { connect } from "react-redux";
+import logoutAction from "../../actions/logoutAction";
+import { withRouter } from 'react-router'
+
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 // nodejs library to set properties for components
 import { PropTypes } from "prop-types";
 
 // reactstrap components
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
   Collapse,
   DropdownMenu,
   DropdownItem,
@@ -81,6 +80,8 @@ class Sidebar extends React.Component {
   // creates the links that appear in the left menu / Sidebar
   createLinks = routes => {
     return routes.map((prop, key) => {
+      // console.log(prop)
+      if(prop.sidebarDisplay)
       return (
         <NavItem key={key}>
           <NavLink
@@ -94,6 +95,8 @@ class Sidebar extends React.Component {
           </NavLink>
         </NavItem>
       );
+      else
+      return("");
     });
   };
   render() {
@@ -184,9 +187,14 @@ class Sidebar extends React.Component {
                   <span>Support</span>
                 </DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem href="#pablo" onClick={e => e.preventDefault()}>
+                <DropdownItem href="#pablo" onClick={ (e) => {
+                  {/* this.props.history.push('/auth/login'); */}
+                    this.props.logoutAction()
+                  console.log(this.props)
+                  
+                  }}>
                   <i className="ni ni-user-run" />
-                  <span>Logout</span>
+                  <span>Logout>>></span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
@@ -242,27 +250,41 @@ class Sidebar extends React.Component {
             {/* Divider */}
             <hr className="my-3" />
             {/* Heading */}
-            <h6 className="navbar-heading text-muted">Documentation</h6>
+            <h6 className="navbar-heading text-muted">Jobs</h6>
             {/* Navigation */}
             <Nav className="mb-md-3" navbar>
+            
               <NavItem>
-                <NavLink href="https://demos.creative-tim.com/argon-dashboard-react/documentation/overview?ref=adr-admin-sidebar">
-                  <i className="ni ni-spaceship" />
-                  Getting started
+                <NavLink to="/admin/jobs/available"
+                onClick={this.closeCollapse}
+                tag={NavLinkRRD}
+                activeClassName="active"
+                >
+                  <i className="ni ni-hat-3 text-red" />
+                  Available Jobs
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="https://demos.creative-tim.com/argon-dashboard-react/documentation/colors?ref=adr-admin-sidebar">
-                  <i className="ni ni-palette" />
-                  Foundation
+                <NavLink to="/admin/jobs/scheduled"
+                onClick={this.closeCollapse}
+                tag={NavLinkRRD}
+                activeClassName="active"
+                >
+                  <i className="ni ni-watch-time text-green"  />
+                  Scheduled Jobs
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="https://demos.creative-tim.com/argon-dashboard-react/documentation/alerts?ref=adr-admin-sidebar">
-                  <i className="ni ni-ui-04" />
-                  Components
+                <NavLink to="/admin/jobs/past"
+                onClick={this.closeCollapse}
+                tag={NavLinkRRD}
+                activeClassName="active"
+                >
+                  <i className="ni ni-folder-17 text-blue" />
+                  Past Jobs
                 </NavLink>
               </NavItem>
+
             </Nav>
           </Collapse>
         </Container>
@@ -292,4 +314,14 @@ Sidebar.propTypes = {
   })
 };
 
-export default Sidebar;
+
+const mapStateToProps = state => ({
+  ...state
+});
+const mapDispatchToProps = dispatch => ({
+  logoutAction: () => dispatch(logoutAction())
+});
+export default withRouter(connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Sidebar));

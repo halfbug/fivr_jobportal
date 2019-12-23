@@ -16,6 +16,9 @@
 
 */
 import React from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+
 import { Route, Switch } from "react-router-dom";
 // reactstrap components
 import { Container } from "reactstrap";
@@ -28,13 +31,17 @@ import routes from "routes.js";
 
 class Admin extends React.Component {
   componentDidUpdate(e) {
+    if(document){
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
+    if(this.refs.mainContent)
     this.refs.mainContent.scrollTop = 0;
+    }
   }
   getRoutes = routes => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
+        // console.log(prop.component)
         return (
           <Route
             path={prop.layout + prop.path}
@@ -60,6 +67,12 @@ class Admin extends React.Component {
     return "Brand";
   };
   render() {
+    console.log(this.props.authState.loggedIn)
+    console.log(!this.props.authState.loggedIn)
+    if (!this.props.authState.loggedIn) {
+      console.log("#############inside############")
+      return <Redirect to="/auth/login" />;
+    }
     return (
       <>
         <Sidebar
@@ -67,7 +80,7 @@ class Admin extends React.Component {
           routes={routes}
           logo={{
             innerLink: "/admin/index",
-            imgSrc: require("assets/img/brand/argon-react.png"),
+            imgSrc: require("assets/img/brand/logo-blue.png"),
             imgAlt: "..."
           }}
         />
@@ -85,5 +98,10 @@ class Admin extends React.Component {
     );
   }
 }
-
-export default Admin;
+const mapStateToProps = state => ({
+  ...state
+});
+export default connect(
+  mapStateToProps,
+  {}
+)(Admin);

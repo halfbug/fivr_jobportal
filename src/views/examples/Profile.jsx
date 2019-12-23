@@ -16,7 +16,8 @@
 
 */
 import React from "react";
-
+import { connect } from "react-redux";
+import logoutAction from "../../actions/logoutAction";
 // reactstrap components
 import {
   Button,
@@ -37,7 +38,13 @@ class Profile extends React.Component {
   render() {
     return (
       <>
-        <UserHeader />
+        <UserHeader
+        theme="profile.jpg" 
+        heading="Profile" 
+        detail = "Add and update the profile information"
+        buttonLink= 'admin/jobs/add'
+        buttonTxt="Edit Profile"
+         />
         {/* Page content */}
         <Container className="mt--7" fluid>
           <Row>
@@ -329,4 +336,14 @@ class Profile extends React.Component {
   }
 }
 
-export default Profile;
+
+const mapStateToProps = state => ({
+  ...state
+});
+const mapDispatchToProps = dispatch => ({
+  logoutAction: () => dispatch(logoutAction())
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Profile);

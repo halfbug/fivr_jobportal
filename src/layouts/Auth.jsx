@@ -16,6 +16,9 @@
 
 */
 import React from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
+
 import { Route, Switch } from "react-router-dom";
 // reactstrap components
 import { Container, Row, Col } from "reactstrap";
@@ -49,6 +52,9 @@ class Auth extends React.Component {
     });
   };
   render() {
+    if (this.props.authState.loggedIn) {
+      return <Redirect to="/admin/index" />;
+    }
     return (
       <>
         <div className="main-content">
@@ -95,5 +101,10 @@ class Auth extends React.Component {
     );
   }
 }
-
-export default Auth;
+const mapStateToProps = state => ({
+  ...state
+});
+export default connect(
+  mapStateToProps,
+  {}
+)(Auth);

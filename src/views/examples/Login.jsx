@@ -1,5 +1,5 @@
 /*!
-
+  
 =========================================================
 * Argon Dashboard React - v1.0.0
 =========================================================
@@ -16,6 +16,9 @@
 
 */
 import React from "react";
+import { connect } from "react-redux";
+import loginAction from "actions/loginAction";
+import {clearErrors} from '../../actions/errorActions'
 
 // reactstrap components
 import {
@@ -30,16 +33,27 @@ import {
   InputGroupText,
   InputGroup,
   Row,
-  Col
+  Col,
+  Alert
 } from "reactstrap";
 
 class Login extends React.Component {
+  state = {
+    email: "",
+    password: ""
+  };
+  onChange = (stateName, value) => {
+    this.setState({
+      [stateName]: value
+    });
+  };
   render() {
+    console.log(this.props.errorState.msg)
     return (
       <>
         <Col lg="5" md="7">
           <Card className="bg-secondary shadow border-0">
-            <CardHeader className="bg-transparent pb-5">
+            {/* <CardHeader className="bg-transparent pb-5">
               <div className="text-muted text-center mt-2 mb-3">
                 <small>Sign in with</small>
               </div>
@@ -73,11 +87,15 @@ class Login extends React.Component {
                   <span className="btn-inner--text">Google</span>
                 </Button>
               </div>
-            </CardHeader>
+            </CardHeader> */}
             <CardBody className="px-lg-5 py-lg-5">
               <div className="text-center text-muted mb-4">
-                <small>Or sign in with credentials</small>
+                <small>Sign in with credentials</small>
               </div>
+             { this.props.errorState.status === 'login_error' ? <Alert color="danger">
+        {this.props.errorState.msg}
+      </Alert>:""
+             }
               <Form role="form">
                 <FormGroup className="mb-3">
                   <InputGroup className="input-group-alternative">
@@ -86,7 +104,11 @@ class Login extends React.Component {
                         <i className="ni ni-email-83" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Email" type="email" />
+                    <Input
+                      placeholder="Email"
+                      type="email"
+                      onChange={e => this.onChange("email", e.target.value)}
+                    />
                   </InputGroup>
                 </FormGroup>
                 <FormGroup>
@@ -96,7 +118,11 @@ class Login extends React.Component {
                         <i className="ni ni-lock-circle-open" />
                       </InputGroupText>
                     </InputGroupAddon>
-                    <Input placeholder="Password" type="password" />
+                    <Input
+                      placeholder="Password"
+                      type="password"
+                      onChange={e => this.onChange("password", e.target.value)}
+                    />
                   </InputGroup>
                 </FormGroup>
                 <div className="custom-control custom-control-alternative custom-checkbox">
@@ -113,7 +139,17 @@ class Login extends React.Component {
                   </label>
                 </div>
                 <div className="text-center">
-                  <Button className="my-4" color="primary" type="button">
+                  <Button
+                    className="my-4"
+                    color="primary"
+                    type="button"
+                    onClick={() =>
+                      this.props.loginAction(
+                        this.state.email,
+                        this.state.password
+                      )
+                    }
+                  >
                     Sign in
                   </Button>
                 </div>
@@ -145,5 +181,15 @@ class Login extends React.Component {
     );
   }
 }
+const mapStateToProps = state => ({
+  ...state
+});
+const mapDispatchToProps = dispatch => ({
+  loginAction: (email, password) => dispatch(loginAction(email, password)),
+  clearErrors : ()=>dispatch(clearErrors())
 
-export default Login;
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);

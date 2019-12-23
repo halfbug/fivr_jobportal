@@ -30,6 +30,9 @@ import {
   Col
 } from "reactstrap";
 
+import logoWhite from '../../assets/img/brand/logo-white.png'
+import logoBlue from '../../assets/img/brand/logo-blue.png'
+
 class AdminNavbar extends React.Component {
   render() {
     return (
@@ -40,7 +43,7 @@ class AdminNavbar extends React.Component {
         >
           <Container className="px-4">
             <NavbarBrand to="/" tag={Link}>
-              <img alt="..." src={require("assets/img/brand/argon-react-white.png")} />
+              <img alt="..." src={logoWhite} />
             </NavbarBrand>
             <button className="navbar-toggler" id="navbar-collapse-main">
               <span className="navbar-toggler-icon" />
@@ -52,9 +55,9 @@ class AdminNavbar extends React.Component {
                     <Link to="/">
                       <img
                         alt="..."
-                        src={require("assets/img/brand/argon-react.png")}
+                        src={logoBlue}
                       />
-                    </Link>
+                    </Link> 
                   </Col>
                   <Col className="collapse-close" xs="6">
                     <button

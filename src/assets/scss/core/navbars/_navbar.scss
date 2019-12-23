@@ -30,9 +30,9 @@
         font-size: .875rem;
         letter-spacing: .05px;
 
-        img {
-            height: 30px;
-        }
+        // img {
+        //     // height: 30px;
+        // }
     }
 
     .navbar-dark {
@@ -150,4 +150,36 @@
             }
         }
     }
+}
+
+.DateRangePickerInput__withBorder_2 {
+    box-shadow: 0 1px 3px rgba(50, 50, 93, 0.15), 0 1px 0 rgba(0, 0, 0, 0.02);
+    border: 0 !important;
+    -webkit-transition: box-shadow .15s ease;
+    transition: box-shadow .15s ease;
+    border-radius: 0.375rem !important;
+    display: block !important;
+    .DateInput{
+        border-radius: 0.375rem !important;
+        background-color: transparent !important;
+        .DateInput_input{
+            border-radius: 0.375rem !important;
+        background-color: transparent !important;
+        }
+    }
+}
+
+.CalendarDay__selected {
+    background: #1173EF; //background
+    
+  }
+  .CalendarDay__hovered_span:hover,
+.CalendarDay__hovered_span {
+  background:  #1173EF;
+}
+
+.CalendarDay__selected_span {
+    background: #80b8ff;
+    border: 1px double #69abff;
+    color: #fff;
 }
