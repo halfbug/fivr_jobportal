@@ -15,7 +15,12 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
-  
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+    
   Table,
   Container,
   Row,
@@ -24,7 +29,7 @@ import {
 // core components
 import Header from "components/Headers/Header.jsx";
 import UserHeader from "components/Headers/UserHeader.jsx";
-import {listJobs} from "../../actions/jobAction"
+import {listJobs, deleteJob} from "../../actions/jobAction"
 import { connect } from "react-redux";
 
 import moment from 'moment';
@@ -36,16 +41,32 @@ class JobsList extends React.Component {
     
         this.state = {
         jobs : "",
-        loaded : false
+        loaded : false,
+        jtype : "open"
         };
+
+        
+        this.handleDelete = this.handleDelete.bind(this);
       }
 
 componentDidMount(prevprops){
   console.log(this.state.jobs)
   console.log(this.props)
-  if (!this.state.jobs){
-    this.props.listJobs("open");
+  let jtype = ""
+  switch(this.props.location.pathname.split('/')[3]){
+    case "scheduled" : 
+    jtype = "closed"
+    break;
+    case "past" :
+    jtype= "done"
+    break;
+    default:
+    jtype= "open"
+  }
 
+  if (!this.state.jobs){
+    this.props.listJobs(jtype);
+    this.setState({jtype})
   }
   
 }
@@ -54,24 +75,32 @@ componentDidMount(prevprops){
 componentDidUpdate(prevProps) {
   if (prevProps.jobState !== this.props.jobState) {
   this.setState({
-    jobs : this.props.jobState.availableJobs,
-    loaded : true
+    jobs : this.props.jobState.allJobs.filter((job)=>job.status === this.state.jtype),
+    loaded : true,
+    jobToDelete : "",
+    modal : false
   })
   
   }  
   else{
     console.log(this.props.jobState.availableJobs)
   }
-
-
 }
+
+    handleDelete(e){
+      console.log("delete***************************")
+      console.log(this.props)
+      this.props.deleteJob(this.state.jobToDelete)
+      .catch((e)=>this.setState({errorMessage : e.message}))
+      this.toggle();
+    }
 
 
     listAllJobs(){
       // const {jobState} = this.props;
         // console.log(this.state.jobs.length)
         console.log(this.state.jobs)
-        if(this.state.jobs){
+        if(this.state.jobs.length > 0){
           console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
           return this.state.jobs.map((job)=>{
             console.log(job)
@@ -129,20 +158,22 @@ return duration
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-menu-arrow" right>
                   <DropdownItem
-                    href="#pablo"
-                    onClick={e => e.preventDefault()}
+                  to={`/admin/jobs/detail/${job.id}`}
+                  tag= {NavLinkRRD}
+                  
                   >
-                  <Link to={`/admin/jobs/detail/${job.id}`}>View</Link> 
+                  View
                   </DropdownItem>
                   <DropdownItem
-                    href="#pablo"
-                    onClick={e => e.preventDefault()}
+                  to={`/admin/jobs/edit/${job.id}`}
+                  tag= {NavLinkRRD}
+                  
                   >
                     Edit
                   </DropdownItem>
                   <DropdownItem
                     href="#pablo"
-                    onClick={e => e.preventDefault()}
+                    onClick={e => {this.toggle(); this.setState({jobToDelete:job})}}
                   >
                     Delete
                   </DropdownItem>
@@ -163,12 +194,15 @@ return duration
   render() {
       console.log(this.state);
       // this.listAllJobs();
+      const heading = function(str){
+        return str.replace(str.charAt(0),str.charAt(0).toUpperCase())
+        }(this.props.location.pathname.split('/')[3])
     return (
       <>
         <UserHeader 
         theme="classroom.jpg" 
-        heading="Subtitute Teacher Jobs List" 
-        detail = "Recent jobs listed below for the subtitute teacher protal"
+        heading={heading}
+        detail = "Jobs listed below for the subtitute teacher protal"
         buttonLink= '/admin/jobs/add'
         buttonTxt="Add Job"
          />
@@ -257,9 +291,21 @@ return duration
           </Row>
          
         </Container>
+        <Modal isOpen={this.state.modal} toggle={this.toggle} >
+        <ModalHeader toggle={this.toggle}>Modal title</ModalHeader>
+        <ModalBody>
+          Are you sure you want to delete {this.state.jobToDelete ? this.state.jobToDelete.schoolName :""}'s job
+          </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={this.handleDelete}>Delete</Button>{' '}
+          <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+        </ModalFooter>
+      </Modal>
       </>
     );
   }
+
+  toggle = () => this.setState({modal:!this.state.modal});
 }
 // export default AddJob;
 const mapStateToProps = state => ({
@@ -267,7 +313,9 @@ const mapStateToProps = state => ({
   });
   const mapDispatchToProps = dispatch => ({
     listJobs: (type) =>
-      dispatch(listJobs(type))
+      dispatch(listJobs(type)),
+    deleteJob: (job)=>
+      dispatch(deleteJob(job))
   });
   export default connect(
     mapStateToProps,

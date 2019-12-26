@@ -19,13 +19,43 @@ export default (state={
                 status : "created"
                 };
 
+             case "UpdateJob":
             
+                    console.log("getting ", action.payload);
+                    
+                    console.log(action.payload);
+                    let allJobs = state.allJobs.map((job)=>{
+                       if(job.id === action.payload.job.id )
+                        job=Object.values(action.payload)
+                    })
+                    return {
+                    // keep the old state
+                    ...state,
+                     allJobs,
+                     status : "created"
+                    };
+    
+            case "deleteJob":
+            
+                        console.log("deleting' ", action.payload);
+                        console.log(action.payload);
+                        console.log(action.payload);
+                         allJobs = state.allJobs.filter((job)=>job.id !== action.payload.job.id )
+                            
+
+                        return {
+                        // keep the old state
+                        ...state,
+                         allJobs,
+                         status : "deleted"
+                        };
+
             case "listJobs":
                     console.log("getting################################# ", action.payload);
                     console.log(action.payload);
                     return {
                     ...state,
-                    availableJobs: action.payload.jobs,
+                    // availableJobs: action.payload.jobs,
                     status : "loaded",
                     allJobs : action.payload.jobs
                     };  

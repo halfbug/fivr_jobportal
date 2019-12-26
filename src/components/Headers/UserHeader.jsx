@@ -44,7 +44,7 @@ class UserHeader extends React.Component {
             <Row>
               <Col lg="12" md="10">
                 <h1 className="display-2 text-white">{this.props.heading}</h1>
-                <p className="text-white mt-0 mb-5">
+                <p className="text-white mt-0 mb-2">
                  {this.props.detail}
                 </p>
                 <Button

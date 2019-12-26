@@ -84,8 +84,8 @@ class JobDetail extends React.Component {
                 </CardHeader>
                 <CardBody className="pt-0 pt-md-4">
                 <Row className="mt-5">
-                <Col lg="12" xl="12">
-                  <Card className="card-stats mb-4 mb-xl-0">
+                <Col lg="12" xl="12" className="mb-2">
+                  <Card className="card-stats mb-4 mb-xl-0 ">
                     <CardBody>
                       <Row>
                         <div className="col">
@@ -133,7 +133,7 @@ return duration
                     </CardBody>
                   </Card>
                 </Col>
-                <Col lg="12" xl="12">
+                <Col lg="12" xl="12" className="mb-2">
                   <Card className="card-stats mb-4 mb-xl-0">
                     <CardBody>
                       <Row>
@@ -163,7 +163,7 @@ return duration
                     </CardBody>
                   </Card>
                 </Col>
-                <Col lg="12" xl="12">
+                <Col lg="12" xl="12" className="mb-2">
                   <Card className="card-stats mb-4 mb-xl-0">
                     <CardBody>
                       <Row>

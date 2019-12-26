@@ -44,6 +44,14 @@ var routes = [
     sidebarDisplay : false
   },
   {
+    path: "/jobs/edit/:id",
+    name: "Jobs",
+    icon: "ni ni-single-copy-04 text-red ",
+    component: AddJobs,
+    layout: "/admin",
+    sidebarDisplay : false
+  },
+  {
     path: "/jobs/available",
     name: "Jobs",
     icon: "ni ni-single-copy-04 text-red ",

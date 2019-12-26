@@ -25,45 +25,108 @@ import Header from "components/Headers/Header.jsx";
 // import DateRangePicker from 'react-bootstrap-daterangepicker';
 // import DatePicker from "../../components/datePicker" 
 import { AvForm, AvGroup, AvInput , AvFeedback} from 'availity-reactstrap-validation';
-import {createJob} from "../../actions/jobAction"
+import {createJob , updateJob} from "../../actions/jobAction"
 
+const initialState = {
+  date :"",
+  startTime : "",
+  endTime : "",
+  email : "",
+  phoneNumber :"",
+  schoolName: "",
+  schoolAddress : "",
+  class :"",
+  regularTeacherName : "",
+  notes : "",
+  errorMessage : "",
+  heading : "Add",
+  errors : [],
+  values : []
+         };
 
 class AddJob extends React.Component {
     constructor(props) {
         super(props);
     
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.state = {
-         date :"",
-         startTime : "",
-         endTime : "",
-         email : "",
-         phoneNumber :"",
-         schoolName: "",
-         schoolAddress : "",
-         class :"",
-         regularTeacherName : "",
-         notes : ""
-        };
+        this.state = initialState
       }
+
+      componentDidMount () {
+        console.log(this.props.jobState.allJobs)
+        // console.log(this.props.match.params.id)
+        console.log(this.props);
+        if(this.props.match.path.indexOf("edit")>-1)
+        {
+          let job = this.props.jobState.allJobs.filter((j)=>j.id === this.props.match.params.id)[0]
+          console.log(job)
+          const {date,
+          startTime,
+          endTime,
+          email,
+          phoneNumber,
+          schoolName,
+          schoolAddress,
+           regularTeacherName,
+          notes} = job;
+          
+          this.setState({date,
+            startTime,
+            endTime,
+            email,
+            phoneNumber,
+            schoolName,
+            schoolAddress,
+            class : job.class,
+            regularTeacherName,
+            notes,
+            heading : "Edit"
+          })
+        }
+      }
+
       handleChange = (e) => {
           
         this.setState({
           [e.target.name]: e.target.value
         });
       };
+      
       handleSubmit(event, errors, values) {
         event.preventDefault();
         
         this.setState({errors, values});
         console.log(this.state)
-        this.props.createJob(
-          this.state.values
-        ).catch((e)=>console.log(e))
+        if(this.state.errors.length<1)
+        if(this.props.match.path.indexOf("edit")>-1)
+        {
+          this.props.updateJob({
+            ...this.state.values,
+            id: this.props.match.params.id
+          }
+          ).catch((e)=>this.setState({errorMessage : e.message}))
+        }
+        else {
+          this.props.createJob(
+            this.state.values
+          ).catch((e)=>this.setState({errorMessage : e.message}))
+          this.setState(initialState)
+        }
+      
       }
 
   render() {
       console.log(this.state)
+      const {date,
+        startTime,
+        endTime,
+        email,
+        phoneNumber,
+        schoolName,
+        schoolAddress,
+       
+        regularTeacherName,
+        notes} = this.state
     return (
       <>
         <Header />  
@@ -76,7 +139,7 @@ class AddJob extends React.Component {
               <CardHeader className="bg-white border-0">
                   <Row className="align-items-center">
                     <Col xs="8">
-                      <h3 className="mb-0">New Job</h3>
+                      <h3 className="mb-0">{this.state.heading} Job</h3>
                     </Col>
                     <Col className="text-right" xs="4">
                       {/* <Button
@@ -92,8 +155,12 @@ class AddJob extends React.Component {
                   </CardHeader>
                   <CardBody>
 
-{(!this.props.errorState.status=== "created")?<Alert color="success">
-        Job has been added successfully..
+{(this.props.jobState.status=== "created")?<Alert color="success">
+        Job has been save successfully..
+        </Alert>:""}
+
+        {this.state.errorMessage?<Alert color="danger">
+        {this.state.errorMessage}
         </Alert>:""}
 
                   <AvForm role="Form" onSubmit={this.handleSubmit}>
@@ -118,11 +185,13 @@ class AddJob extends React.Component {
                             </label>
                             <AvInput
                               className="form-control-alternative"
-                             // defaultValue=""
+                             required
                               name="date"
                               placeholder="mm/dd/yy"
                               type="date"
                               onChange={this.handleChange}
+                              value={date}
+                              min={Date.now()}
                             />
                             <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
                           </AvGroup>
@@ -145,6 +214,7 @@ class AddJob extends React.Component {
                               name="startTime"
                               onChange={this.handleChange}
                               type="time"
+                              value={startTime}
                             />
                             <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
                           </AvGroup>
@@ -160,7 +230,7 @@ class AddJob extends React.Component {
                             <AvInput
                             required
                               className="form-control-alternative"
-                              //defaultValue=""
+                              value={endTime}
                               name="endTime"
                               placeholder="Last name"
                               type="time"
@@ -195,6 +265,7 @@ class AddJob extends React.Component {
                               name="schoolName"
                               placeholder="School Name"
                               type="text"
+                              value={schoolName}
                               onChange={this.handleChange}
                             />
                             <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
@@ -216,6 +287,7 @@ class AddJob extends React.Component {
                               name="phoneNumber"
                              // placeholder="Last name"
                               type="number"
+                              value={phoneNumber}
                               onChange={this.handleChange}
                             />
                             <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
@@ -237,6 +309,7 @@ class AddJob extends React.Component {
                               name="schoolAddress"
                              // placeholder="Home Address"
                               type="text"
+                              value={schoolAddress}
                               onChange={this.handleChange}
                             />
                             <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
@@ -264,6 +337,7 @@ class AddJob extends React.Component {
                               name="class"
                               placeholder="Chemistry / Spanish"
                               type="text"
+                              value={this.state.class}
                               onChange={this.handleChange}
                             />
                             <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
@@ -283,6 +357,7 @@ class AddJob extends React.Component {
                               name="regularTeacherName"
                               placeholder="Mrs. White Topssy"
                               type="text"
+                              value={regularTeacherName}
                               onChange={this.handleChange}
                             />
                             <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
@@ -301,6 +376,7 @@ class AddJob extends React.Component {
                               name="email"
                              // placeholder="Postal code"
                               type="email"
+                              value={email}
                               onChange={this.handleChange}
                             />
                             <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
@@ -321,6 +397,7 @@ class AddJob extends React.Component {
                           onChange={this.handleChange}
                           type="textarea"
                           name="notes"
+                          value={notes}
                         />
                         <AvFeedback className="text-danger ml-3">Invalid </AvFeedback>
                       </AvGroup>
@@ -352,7 +429,9 @@ const mapStateToProps = state => ({
   });
   const mapDispatchToProps = dispatch => ({
     createJob: (data) =>
-      dispatch(createJob(data))
+      dispatch(createJob(data)),
+    updateJob: (data) =>
+      dispatch(updateJob(data)),  
   });
   export default connect(
     mapStateToProps,
