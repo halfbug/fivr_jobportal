@@ -53,6 +53,7 @@ class Auth extends React.Component {
   };
   render() {
     if (this.props.authState.loggedIn) {
+      
       return <Redirect to="/admin/index" />;
     }
     return (

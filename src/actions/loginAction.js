@@ -14,7 +14,7 @@ const loginAction = (email, password) => async dispatch => {
       // if the login was succesful, then
       // we dispatch to our reducers the fact that
       // login was succesful by sending true
-      dispatch({ type: "login", payload: "true" });
+      dispatch({ type: "login", payload: true });
       dispatch({ type: 'clearError'});
     })
     // if the login was not succesful we can catch the erros here

@@ -14,5 +14,6 @@ var config = {
 };
 let firebase = firebaseConfig.initializeApp(config);
 let firestore = firebaseConfig.firestore();
+const firefunctions = firebaseConfig.functions();
 
-export { firebase, firestore};
+export { firebase, firestore, firefunctions} ;

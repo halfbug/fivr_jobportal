@@ -25,6 +25,7 @@ import Icons from "views/examples/Icons.jsx";
 import JobList from "./views/jobs/List"
 import JobView from "./views/jobs/View"
 import AddJobs from "./views/jobs/Add"
+import AddAdminUser from "./views/admin/addAdminUser";
 
 var routes = [
   {
@@ -33,6 +34,16 @@ var routes = [
     icon: "ni ni-tv-2 text-primary",
     component: Index,
     layout: "/admin",
+    role : "admin",
+    sidebarDisplay : true
+  },
+  {
+    path: "/index",
+    name: "Dashboard",
+    icon: "ni ni-tv-2 text-primary",
+    component: Index,
+    layout: "/admin",
+    role : "client",
     sidebarDisplay : true
   },
   {
@@ -41,6 +52,7 @@ var routes = [
     icon: "ni ni-single-copy-04 text-red ",
     component: AddJobs,
     layout: "/admin",
+    role : "admin",
     sidebarDisplay : false
   },
   {
@@ -49,6 +61,7 @@ var routes = [
     icon: "ni ni-single-copy-04 text-red ",
     component: AddJobs,
     layout: "/admin",
+    role : "admin",
     sidebarDisplay : false
   },
   {
@@ -57,6 +70,7 @@ var routes = [
     icon: "ni ni-single-copy-04 text-red ",
     component: JobList,
     layout: "/admin",
+    role : "admin",
     sidebarDisplay : false
   },
   {
@@ -65,6 +79,7 @@ var routes = [
     icon: "ni ni-single-copy-04 text-red ",
     component: JobList,
     layout: "/admin",
+    role : "admin",
     sidebarDisplay : false
   },
   {
@@ -72,6 +87,7 @@ var routes = [
     name: "Jobs",
     icon: "ni ni-single-copy-04 text-red ",
     component: JobList,
+    role : "admin",
     layout: "/admin",
     sidebarDisplay : false
   },
@@ -80,12 +96,15 @@ var routes = [
     name: "Jobs",
     icon: "ni ni-single-copy-04 text-red ",
     component: JobView,
+    role : "admin",
+    
     layout: "/admin",
     sidebarDisplay : false
   },
   {
     path: "/icons",
     name: "Icons",
+    role : "demo",
     icon: "ni ni-planet text-blue",
     component: Icons,
     sidebarDisplay : false,
@@ -96,6 +115,7 @@ var routes = [
     name: "Maps",
     icon: "ni ni-pin-3 text-orange",
     component: Maps,
+    role : "demo",
     sidebarDisplay : false,
     layout: "/admin"
   },
@@ -105,6 +125,7 @@ var routes = [
     icon: "ni ni-single-02 text-yellow",
     component: Profile,
     sidebarDisplay : false,
+    role : "demo",
     layout: "/admin"
   },
   {
@@ -112,7 +133,8 @@ var routes = [
     name: "Tables",
     icon: "ni ni-bullet-list-67 text-red",
     component: Tables,
-    sidebarDisplay : false, 
+    sidebarDisplay : false,
+    role : "demo", 
     layout: "/admin"
   },
   {
@@ -121,6 +143,7 @@ var routes = [
     icon: "ni ni-key-25 text-info",
     component: Login,
     sidebarDisplay : false,
+    role : "demo",
     layout: "/auth"
   },
   {
@@ -130,6 +153,51 @@ var routes = [
     component: Register,
     sidebarDisplay : false,
     layout: "/auth"
-  }
+  },
+  {
+    path: "/addAdminUser",
+    name: "Register",
+    icon: "ni ni-circle-08 text-pink",
+    component: AddAdminUser,
+    sidebarDisplay : false,
+    layout: "/admin",
+    role : "admin",
+  },
+  {
+    path: "/jobs/available",
+    name: "Client Jobs",
+    icon: "ni ni-single-copy-04 text-red ",
+    component: JobList,
+    layout: "/admin",
+    role : "client",
+    sidebarDisplay : false
+  },
+  {
+    path: "/jobs/scheduled",
+    name: "Jobs",
+    icon: "ni ni-single-copy-04 text-red ",
+    component: JobList,
+    layout: "/admin",
+    role : "client",
+    sidebarDisplay : false
+  },
+  {
+    path: "/jobs/past",
+    name: "Jobs",
+    icon: "ni ni-single-copy-04 text-red ",
+    component: JobList,
+    role : "client",
+    layout: "/admin",
+    sidebarDisplay : false
+  },
+  {
+    path: "/jobs/detail/:id",
+    name: "Jobs",
+    icon: "ni ni-single-copy-04 text-red ",
+    component: JobView,
+    role : "client",
+    layout: "/admin",
+    sidebarDisplay : false
+  },
 ];
 export default routes;

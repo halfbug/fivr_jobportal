@@ -48,7 +48,7 @@ class Login extends React.Component {
     });
   };
   render() {
-    console.log(this.props.errorState.msg)
+    // console.log(this.props.errorState.msg)
     return (
       <>
         <Col lg="5" md="7">

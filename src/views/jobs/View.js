@@ -29,7 +29,7 @@ class JobDetail extends React.Component {
   }
 
 
-  componentDidMount () {
+  componentDidUpdate () {
     console.log(this.props.jobState.allJobs)
     console.log(this.props.match.params.id)
     let job = this.props.jobState.allJobs.filter((j)=>j.id === this.props.match.params.id)[0]

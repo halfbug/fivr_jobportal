@@ -29,11 +29,14 @@ import {
 // core components
 import Header from "components/Headers/Header.jsx";
 import UserHeader from "components/Headers/UserHeader.jsx";
-import {listJobs, deleteJob} from "../../actions/jobAction"
+import {listJobs, deleteJob, acceptJob} from "../../actions/jobAction"
 import { connect } from "react-redux";
 
 import moment from 'moment';
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
+import {isAdmin, isClient} from '../../utilities/auth'
+import ModalAlert from "../../components/ModalAlert";
+
 
 class JobsList extends React.Component {
     constructor(props) {
@@ -42,7 +45,8 @@ class JobsList extends React.Component {
         this.state = {
         jobs : "",
         loaded : false,
-        jtype : "open"
+        jtype : "open",
+        role : "client",
         };
 
         
@@ -52,10 +56,16 @@ class JobsList extends React.Component {
 componentDidMount(prevprops){
   console.log(this.state.jobs)
   console.log(this.props)
+  // console.log("(9999((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((")
+  this.getJobsByType();  
+}
+
+getJobsByType(){
+  console.log("this is type check")
   let jtype = ""
   switch(this.props.location.pathname.split('/')[3]){
     case "scheduled" : 
-    jtype = "closed"
+    jtype = "accepted"
     break;
     case "past" :
     jtype= "done"
@@ -63,18 +73,33 @@ componentDidMount(prevprops){
     default:
     jtype= "open"
   }
-
-  if (!this.state.jobs){
+console.log(this.state.jobs)
+console.log(this.props.authState.loggedIn)
+  if (this.state.jobs === "" && this.props.authState.loggedIn  ){
     this.props.listJobs(jtype);
-    this.setState({jtype})
+    this.setState({
+      jtype,
+      // role : this.props.authState.currentUser.role
+    })
+
   }
-  
+
 }
 
 
-componentDidUpdate(prevProps) {
+
+componentDidUpdate(prevProps,prevState) {
+  console.log(this.props.jobState.status )
+  console.log(this.props.authState.loggedIn)
+  if( this.props.jobState === undefined && this.props.authState.loggedIn)
+  this.getJobsByType();
+
   if (prevProps.jobState !== this.props.jobState) {
-  this.setState({
+    this.getJobsByType();
+
+    console.log("################ inside #######")
+this.getJobsByType();
+    this.setState({
     jobs : this.props.jobState.allJobs.filter((job)=>job.status === this.state.jtype),
     loaded : true,
     jobToDelete : "",
@@ -95,15 +120,18 @@ componentDidUpdate(prevProps) {
       this.toggle();
     }
 
+    handleOptionsButtons=()=>{
+        
+    }
 
     listAllJobs(){
       // const {jobState} = this.props;
         // console.log(this.state.jobs.length)
         console.log(this.state.jobs)
         if(this.state.jobs.length > 0){
-          console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+          // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
           return this.state.jobs.map((job)=>{
-            console.log(job)
+            // console.log(job)
             return <tr key={job.id}>
             <th scope="row">
               <Media className="align-items-center">
@@ -134,9 +162,9 @@ componentDidUpdate(prevProps) {
               { (function(now,then) {
                 var date1 = new Date("08/05/2015 "+now+":20");
 var date2 = new Date("08/05/2015 "+then+":32");
-console.log(date2)
+//console.log(date2)
 var diff = date2.getTime() - date1.getTime();
-console.log(diff)
+//console.log(diff)
 var duration = moment.duration(diff).humanize()
 return duration
                 }(job.startTime,job.endTime))
@@ -145,7 +173,25 @@ return duration
              </td>
             
             <td className="text-right">
-              <UncontrolledDropdown>
+             
+            {isClient(this.props.authState.currentUser) && this.state.jtype === "open" ?   <>
+              <Button color="default" size="sm"  onClick={(e)=>this.props.acceptJob(job)} type="button">
+                Accept</Button>{" "}
+              <Button color="primary" size="sm" onClick={(e)=>this.handleOptionsButtons('reject',job)} type="button">
+                Reject</Button></>
+:" "}
+
+{isClient(this.props.authState.currentUser) && this.state.jtype === "accepted" ? <>  
+<Button color="primary" size="sm" onClick={(e)=>e.preventDefault()} type="button">
+                Done</Button>
+              <Button color="danger" size="sm"  onClick={(e)=>this.props.acceptJob(job)} type="button">
+                Quit </Button>
+                </>
+              
+:" "}
+
+
+{isAdmin(this.props.authState.currentUser)?<UncontrolledDropdown>
                 <DropdownToggle
                   className="btn-icon-only text-light"
                   href="#pablo"
@@ -178,7 +224,8 @@ return duration
                     Delete
                   </DropdownItem>
                 </DropdownMenu>
-              </UncontrolledDropdown>
+              </UncontrolledDropdown>:" "}
+              
             </td>
           </tr>
           })
@@ -301,6 +348,10 @@ return duration
           <Button color="secondary" onClick={this.toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>
+      <ModalAlert>
+        {"Check me i am alert"}
+        {"are you sure to do this???"}
+      </ModalAlert>
       </>
     );
   }
@@ -315,7 +366,10 @@ const mapStateToProps = state => ({
     listJobs: (type) =>
       dispatch(listJobs(type)),
     deleteJob: (job)=>
-      dispatch(deleteJob(job))
+      dispatch(deleteJob(job)),
+    acceptJob: (job)=>
+      dispatch(acceptJob(job))
+
   });
   export default connect(
     mapStateToProps,

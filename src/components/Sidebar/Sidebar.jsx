@@ -55,12 +55,20 @@ var ps;
 
 class Sidebar extends React.Component {
   state = {
-    collapseOpen: false
+    collapseOpen: false,
   };
   constructor(props) {
     super(props);
+    this.state  = {
+      collapseOpen: false,
+      roleNav: "",
+    };
     this.activeRoute.bind(this);
   }
+componentDidUpdate(){
+console.log(this.props.authState.currentUser)
+}
+
   // verifies if routeName is the one active (in browser input)
   activeRoute(routeName) {
     return this.props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
@@ -81,7 +89,8 @@ class Sidebar extends React.Component {
   createLinks = routes => {
     return routes.map((prop, key) => {
       // console.log(prop)
-      if(prop.sidebarDisplay)
+      const rolelink = this.props.authState.currentUser ? prop.role === this.props.authState.currentUser.role : false
+      if(prop.sidebarDisplay && rolelink)
       return (
         <NavItem key={key}>
           <NavLink
@@ -113,6 +122,7 @@ class Sidebar extends React.Component {
         target: "_blank"
       };
     }
+    console.log(this.props.authState)
     return (
       <Navbar
         className="navbar-vertical fixed-left navbar-light bg-white"
@@ -194,7 +204,7 @@ class Sidebar extends React.Component {
                   
                   }}>
                   <i className="ni ni-user-run" />
-                  <span>Logout>>></span>
+                  <span>Logout</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
@@ -252,6 +262,8 @@ class Sidebar extends React.Component {
             {/* Heading */}
             <h6 className="navbar-heading text-muted">Jobs</h6>
             {/* Navigation */}
+            {this.props.authState.currentUser?this.props.authState.loaded && this.props.authState.currentUser.role === "admin"?
+            <>
             <Nav className="mb-md-3" navbar>
             
               <NavItem>
@@ -284,8 +296,62 @@ class Sidebar extends React.Component {
                   Past Jobs
                 </NavLink>
               </NavItem>
-
             </Nav>
+            <h6 className="navbar-heading text-muted">Users</h6>
+          
+            <Nav className="mb-md-3" navbar>
+            
+              <NavItem>
+                <NavLink to="/admin/addAdminUser"
+                onClick={this.closeCollapse}
+                tag={NavLinkRRD}
+                activeClassName="active"
+                >
+                  <i className="ni text-info ni-key-25" />
+                  Add Admin
+                </NavLink>
+              </NavItem>
+              
+            </Nav>
+            </>
+            :
+            <Nav className="mb-md-3" navbar>
+            
+              <NavItem>
+                <NavLink to="/client/jobs/available"
+                onClick={this.closeCollapse}
+                tag={NavLinkRRD}
+                activeClassName="active"
+                >
+                  <i className="ni ni-hat-3 text-red" />
+                  Available Jobs
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink to="/client/jobs/scheduled"
+                onClick={this.closeCollapse}
+                tag={NavLinkRRD}
+                activeClassName="active"
+                >
+                  <i className="ni ni-watch-time text-green"  />
+                  Scheduled Jobs
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink to="/client/jobs/past"
+                onClick={this.closeCollapse}
+                tag={NavLinkRRD}
+                activeClassName="active"
+                >
+                  <i className="ni ni-folder-17 text-blue" />
+                  Past Jobs
+                </NavLink>
+              </NavItem>
+            </Nav>
+:""
+            }
+            
+
           </Collapse>
         </Container>
       </Navbar>

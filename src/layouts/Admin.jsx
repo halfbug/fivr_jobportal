@@ -26,27 +26,48 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.jsx";
 import AdminFooter from "components/Footers/AdminFooter.jsx";
 import Sidebar from "components/Sidebar/Sidebar.jsx";
-
+import authAction from '../actions/authAction'
 import routes from "routes.js";
 
 class Admin extends React.Component {
-  componentDidUpdate(e) {
+
+  componentDidMount(){
+    // console.log("##################################################")
+    // console.log(this.props.authState)
+       if(!this.props.authState.loggedIn)
+    {
+      this.props.authAction();
+    }
+  }
+  componentDidUpdate(e,prevProps) {
     if(document){
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
     if(this.refs.mainContent)
     this.refs.mainContent.scrollTop = 0;
     }
+    // console.log("##################################################")
+    // console.log(this.props.authState)
+       if(!this.props.authState.loggedIn)
+    {
+      this.props.authAction().then((res)=>{
+        //  console.log("#@#@#@#A@#@#@#@#@#@#")
+      });
+    }
   }
+
   getRoutes = routes => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
-        // console.log(prop.component)
+        // console.log(key)
+        // console.log("/"+prop.role + prop.path)
         return (
           <Route
-            path={prop.layout + prop.path}
+          exact 
+            path={"/"+prop.role + prop.path}
             component={prop.component}
             key={key}
+            
           />
         );
       } else {
@@ -67,10 +88,12 @@ class Admin extends React.Component {
     return "Brand";
   };
   render() {
+    // const { loaded , currentUser} = this.props.authState
     console.log(this.props.authState.loggedIn)
-    console.log(!this.props.authState.loggedIn)
-    if (!this.props.authState.loggedIn) {
-      console.log("#############inside############")
+    console.log(this.props.authState.loaded)
+    // const authenticated = this.props.authState.loaded === undefined? false: this.pr
+    if (!this.props.authState.loggedIn ) {
+       console.log("#############inside############")
       return <Redirect to="/auth/login" />;
     }
     return (
@@ -79,18 +102,21 @@ class Admin extends React.Component {
           {...this.props}
           routes={routes}
           logo={{
-            innerLink: "/admin/index",
+            innerLink: "/client/index",
             imgSrc: require("assets/img/brand/logo-blue.png"),
             imgAlt: "..."
           }}
         />
         <div className="main-content" ref="mainContent">
+        
           <AdminNavbar
             {...this.props}
-            brandText={this.getBrandText(this.props.location.pathname)}
+         //   brandText={this.getBrandText(this.props.location.pathname)}
           />
+
           <Switch>{this.getRoutes(routes)}</Switch>
           <Container fluid>
+            
             <AdminFooter />
           </Container>
         </div>
@@ -101,7 +127,11 @@ class Admin extends React.Component {
 const mapStateToProps = state => ({
   ...state
 });
+const mapDispatchToProps = dispatch => ({
+  authAction: () =>
+    dispatch(authAction())
+});
 export default connect(
   mapStateToProps,
-  {}
+  mapDispatchToProps
 )(Admin);

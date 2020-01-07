@@ -28,7 +28,7 @@ class Footer extends React.Component {
         <Row className="align-items-center justify-content-xl-between">
           <Col xl="6">
             <div className="copyright text-center text-xl-left text-muted">
-              © 2019{" "}
+              © {new Date().getFullYear()}{" "}
               <a
                 className="font-weight-bold ml-1"
                 href="/"

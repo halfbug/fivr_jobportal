@@ -4,7 +4,13 @@ import rootReducer from "reducers/rootReducer";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 function configureStore(state = { 
-  authState: {}, 
+  authState: { 
+    currentUser:{uid: null,
+      displayName: null,
+      role : null,
+      email:null
+    }
+  }, 
   statCardState: {},
   errorState: {},
   jobState: {}

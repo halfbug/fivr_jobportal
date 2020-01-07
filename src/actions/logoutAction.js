@@ -14,6 +14,7 @@ const logoutAction = () => async dispatch => {
       // if the login was succesful, then
       // we dispatch to our reducers the fact that
       // login was succesful by sending true
+      console.log("successfully logout")
       dispatch({ type: "logout", payload: false });
     })
     // if the login was not succesful we can catch the erros here

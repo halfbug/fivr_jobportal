@@ -50,21 +50,22 @@ var user = firebase.auth().currentUser;
 };
 
 // get all available jobs
-export const listJobs = (type) => async dispatch => {
-    // console.log(user)
-     //job.userId = user.uid
- 
-    //  firebase.auth().onAuthStateChanged(function(user) {
-
+export const listJobs = (type) => async (dispatch, getState) => {
+  // console.log("****************************************************************************")
+        const state = getState();
+        console.log(state.authState)
         var user = firebase.auth().currentUser;
+        console.log(user)
          if(user){
              console.log(user);
+            //  state.authState.currentUser.role
             //  job.userid = user.uid
             var jobs=[];
             //  
-
+            // let cname = (type === "open")? 'jobs': 'myjobs';
             let jobRef = firestore.collection('jobs').where("status","==",type);
-  let allJobs = jobRef.get()
+  
+             jobRef.get()
   .then(snapshot => {
     snapshot.forEach(doc => {
         let job = doc.data();
@@ -94,8 +95,8 @@ export const updateJob = (job) => async dispatch => {
       if(user){
            console.log(user);
            job.userid = user.uid
-           job.status = "open"
-           job.createdAt = Date.now()
+          //  job.status = "open"
+          //  job.createdAt = Date.now()
            console.log(job)
            firestore.collection('jobs').doc(job.id).set(job)
            .then((res) => {
@@ -140,7 +141,7 @@ export const deleteJob = (job) => async dispatch => {
           //  let deleteDoc = db.collection('cities').doc('DC').delete();
           
            .then((res) => {
-             console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            //  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                console.log(res)
                 dispatch({ type: "deleteJob", payload: {job} });
                 dispatch({ type: 'clearError'});
@@ -154,6 +155,51 @@ export const deleteJob = (job) => async dispatch => {
                }
             });
        
+        });
+       }
+       
+       else // user is undefined if no user signed in
+       dispatch({ type: 'setError' , 
+       payload : {
+           msg : "", 
+           status : "error" , 
+           id: 77889}
+       });
+     
+      
+};
+
+
+// accept job
+export const acceptJob = (job) => async (dispatch,getState) => {
+  console.log("Accepting------------------job")
+  const state = getState();
+
+   var user = firebase.auth().currentUser;
+      if(user){
+           
+            // job.userid = user.uid
+            job.status = "accepted"
+            job.acceptedOn = Date.now()
+            console.log(job)
+            job.acceptedBy = user.uid
+          
+            console.log(job)
+            firestore.collection('jobs').doc(job.id).set(job)
+            .then((res) => {
+                console.log(res)
+                 dispatch({ type: "AcceptJob", payload: {job} });
+                 dispatch({ type: 'clearError'});
+             }).catch(err => {
+               console.log(err);
+               dispatch({ type: 'setError' , 
+               payload : {
+                    msg : err.message, 
+                    status : "error" , 
+                    id: err.code
+                }
+             });
+   
         });
        }
        
