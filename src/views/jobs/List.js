@@ -29,7 +29,7 @@ import {
 // core components
 import Header from "components/Headers/Header.jsx";
 import UserHeader from "components/Headers/UserHeader.jsx";
-import {listJobs, deleteJob, acceptJob} from "../../actions/jobAction"
+import {listJobs, deleteJob, acceptJob, rejectJob, doneJob, quitJob} from "../../actions/jobAction"
 import { connect } from "react-redux";
 
 import moment from 'moment';
@@ -47,6 +47,14 @@ class JobsList extends React.Component {
         loaded : false,
         jtype : "open",
         role : "client",
+        modal : false,
+        selectedJob : "",
+        actionCallback : "",
+        alert : {
+          title : "",
+          message : ""
+        }
+        
         };
 
         
@@ -102,7 +110,8 @@ this.getJobsByType();
     this.setState({
     jobs : this.props.jobState.allJobs.filter((job)=>job.status === this.state.jtype),
     loaded : true,
-    jobToDelete : "",
+    selectedJob : "",
+    action : "",
     modal : false
   })
   
@@ -115,15 +124,12 @@ this.getJobsByType();
     handleDelete(e){
       console.log("delete***************************")
       console.log(this.props)
-      this.props.deleteJob(this.state.jobToDelete)
+      this.props.deleteJob(this.state.selectedJob)
       .catch((e)=>this.setState({errorMessage : e.message}))
       this.toggle();
     }
 
-    handleOptionsButtons=()=>{
-        
-    }
-
+    
     listAllJobs(){
       // const {jobState} = this.props;
         // console.log(this.state.jobs.length)
@@ -145,7 +151,7 @@ this.getJobsByType();
                 </a>
                 <Media>
                   <span className="mb-0 text-sm">
-                    {job.schoolName}
+                    <Link to={`/admin/jobs/detail/${job.id}`}>{job.schoolName}</Link>
                   </span>
                 </Media>
               </Media>
@@ -175,16 +181,51 @@ return duration
             <td className="text-right">
              
             {isClient(this.props.authState.currentUser) && this.state.jtype === "open" ?   <>
-              <Button color="default" size="sm"  onClick={(e)=>this.props.acceptJob(job)} type="button">
+              <Button color="default" size="sm"  onClick={(e)=>{this.toggle(); 
+                this.setState({selectedJob:job,
+                    alert:{
+                      title:"Accept Job !!!",
+                      message : <span>Are you sure you want to accept the job of <br/><b> {job.schoolName}</b>.
+                     
+                      </span>
+                    },
+                    actionCallback:()=>this.props.acceptJob(job)
+                    })}} type="button">
                 Accept</Button>{" "}
-              <Button color="primary" size="sm" onClick={(e)=>this.handleOptionsButtons('reject',job)} type="button">
+              <Button color="primary" size="sm" onClick={e => {this.toggle(); 
+                this.setState({selectedJob:job,
+                    alert:{
+                      title:"Reject Job !!!",
+                      message : <span>Are you sure you want to reject job of <b> {job.schoolName}</b>.
+                      <br/> You will no longer see this job again.
+                      </span>
+                    },
+                    actionCallback:()=>this.props.rejectJob(job)
+                    })}}
+                type="button">
                 Reject</Button></>
 :" "}
 
 {isClient(this.props.authState.currentUser) && this.state.jtype === "accepted" ? <>  
-<Button color="primary" size="sm" onClick={(e)=>e.preventDefault()} type="button">
+<Button color="primary" size="sm" onClick={e => {this.toggle(); 
+                this.setState({selectedJob:job,
+                    alert:{
+                      title:"Done Job !!!",
+                      message : <span>Are you sure you want to make as done, the job of <b> {job.schoolName}</b>.
+                      </span>
+                    },
+                    actionCallback:()=>this.props.doneJob(job)
+                    })}} type="button">
                 Done</Button>
-              <Button color="danger" size="sm"  onClick={(e)=>this.props.acceptJob(job)} type="button">
+              <Button color="danger" size="sm"  onClick={e => {this.toggle(); 
+                this.setState({selectedJob:job,
+                    alert:{
+                      title:"Quit Job !!!",
+                      message : <span>Are you sure you want to quit form the job of <b> {job.schoolName}</b>.
+                      </span>
+                    },
+                    actionCallback:()=>this.props.quitJob(job)
+                    })}} type="button">
                 Quit </Button>
                 </>
               
@@ -219,7 +260,13 @@ return duration
                   </DropdownItem>
                   <DropdownItem
                     href="#pablo"
-                    onClick={e => {this.toggle(); this.setState({jobToDelete:job})}}
+                    onClick={e => {this.toggle(); this.setState({selectedJob:job,
+                    alert:{
+                      title:"Delete Job !!!",
+                      message : <span>Are you sure you want to delete job of <b> {job.schoolName}</b></span>
+                    },
+                    actionCallback: this.handleDelete
+                    })}}
                   >
                     Delete
                   </DropdownItem>
@@ -338,14 +385,23 @@ return duration
           </Row>
          
         </Container>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} >
-        <ModalHeader toggle={this.toggle}>Modal title</ModalHeader>
-        <ModalBody>
-          Are you sure you want to delete {this.state.jobToDelete ? this.state.jobToDelete.schoolName :""}'s job
+        <Modal isOpen={this.state.modal} toggle={this.toggle}  className="modal-dialog-centered text-white" >
+        <ModalHeader toggle={this.toggle} className="modal-header bg-gradient-info ">{this.state.alert.title}</ModalHeader>
+        <ModalBody className="modal-body bg-gradient-info">
+        <div className="py-3 text-center">
+                  <i className="ni ni-bell-55 ni-3x" />
+                  <h4 className="heading mt-4">Please Confirm</h4>
+                  <p>
+         {this.state.alert.message}
+         </p>
+                </div>
           </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={this.handleDelete}>Delete</Button>{' '}
-          <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+        <ModalFooter className="modal-footer bg-gradient-info">
+          <Button onClick={this.state.actionCallback} className="btn-white" color="warnig" type="button">Ok</Button>{' '}
+          <Button  onClick={this.toggle} className="text-white ml-auto"
+                  color="link"
+                  data-dismiss="modal"
+                  type="button" >Cancel</Button>
         </ModalFooter>
       </Modal>
       <ModalAlert>
@@ -367,8 +423,16 @@ const mapStateToProps = state => ({
       dispatch(listJobs(type)),
     deleteJob: (job)=>
       dispatch(deleteJob(job)),
+    rejectJob: (job)=>
+      dispatch(rejectJob(job)),
     acceptJob: (job)=>
-      dispatch(acceptJob(job))
+      dispatch(acceptJob(job)),
+    doneJob: (job)=>
+      dispatch(doneJob(job)),
+    quitJob: (job)=>
+      dispatch(quitJob(job))
+
+
 
   });
   export default connect(

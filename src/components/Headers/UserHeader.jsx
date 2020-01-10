@@ -1,20 +1,4 @@
-/*!
 
-=========================================================
-* Argon Dashboard React - v1.0.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2019 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 
 // reactstrap components
@@ -22,6 +6,9 @@ import { Button, Container, Row, Col } from "reactstrap";
 import { withRouter } from 'react-router'
 
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
+import { connect } from "react-redux";
+
+import {isAdmin, isClient} from '../../utilities/auth'
 
 class UserHeader extends React.Component {
   render() {
@@ -47,14 +34,16 @@ class UserHeader extends React.Component {
                 <p className="text-white mt-0 mb-2">
                  {this.props.detail}
                 </p>
+                {isAdmin(this.props.authState.currentUser)?
                 <Button
                   color="info"
                   to={this.props.buttonLink}
                   tag={NavLinkRRD}
                   //onClick={e => e.preventDefault()}
-                >
+                > 
                   {this.props.buttonTxt}
                 </Button>
+              : ""}
               </Col>
             </Row>
           </Container>
@@ -63,5 +52,11 @@ class UserHeader extends React.Component {
     );
   }
 }
+const mapStateToProps = state => ({
+  ...state
+});
 
-export default UserHeader;
+export default connect(
+  mapStateToProps,
+  null
+)(UserHeader);

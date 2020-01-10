@@ -1,4 +1,7 @@
 import * as firebaseConfig from "firebase";
+import 'firebase/firestore';
+import 'firebase/auth';
+
 
 // replace this variable, with your own config variable
 // from your firebase project
@@ -15,5 +18,7 @@ var config = {
 let firebase = firebaseConfig.initializeApp(config);
 let firestore = firebaseConfig.firestore();
 const firefunctions = firebaseConfig.functions();
+
+firebase.firestore().settings({ timestampsInSnapshots: true });
 
 export { firebase, firestore, firefunctions} ;

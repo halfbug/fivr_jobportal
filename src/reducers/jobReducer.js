@@ -61,20 +61,37 @@ export default (state={
                     allJobs : action.payload.jobs
                     };
                     
-                    case "AcceptJob":
+            case "AcceptJob":
             
-                        // console.log("getting ", action.payload);
-                        // console.log(action.payload);
                         return {
                         // keep the old state
                         ...state,
-                        // add all the cards from the database
-                        // they will come in a json format,
-                        // so we need to convert them to array
                         allJobs: Object.values(action.payload).concat(state.allJobs),
                         status : "accepted"
                         };        
                     
+            case "RejectJob":
+            
+                            return {
+                            ...state,
+                            allJobs: state.allJobs.filter((job)=>job.id !== action.payload.job.id ),
+                            status : "rejected"
+                            };
+                            
+            case "DoneJob":
+                                return {
+                                // keep the old state
+                                ...state,
+                                allJobs: Object.values(action.payload).concat(state.allJobs),
+                                status : "done"
+                                };
+            case "QuitJob":
+                                        return {
+                                        // keep the old state
+                                        ...state,
+                                        allJobs: Object.values(action.payload).concat(state.allJobs),
+                                        status : "quit"
+                                        };        
             default:
                 return state;
     }

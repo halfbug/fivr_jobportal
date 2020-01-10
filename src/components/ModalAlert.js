@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const ModalAlert = (props) => {
@@ -10,6 +10,7 @@ const ModalAlert = (props) => {
   const [modal, setModal] = useState(false);
 
   const toggle = () => setModal(!modal);
+
 
   return (
     <div>

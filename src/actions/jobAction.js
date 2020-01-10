@@ -1,6 +1,5 @@
 import {firestore, firebase } from "firebaseConfig";
-
-// get me the firebase jobbase
+import * as firebaser from 'firebase';// get me the firebase jobbase
 // const jobbaseRef = firebase.jobbase().ref();
 // console.log(jobbaseRef)
 //  
@@ -58,29 +57,36 @@ export const listJobs = (type) => async (dispatch, getState) => {
         console.log(user)
          if(user){
              console.log(user);
-            //  state.authState.currentUser.role
-            //  job.userid = user.uid
             var jobs=[];
-            //  
-            // let cname = (type === "open")? 'jobs': 'myjobs';
             let jobRef = firestore.collection('jobs').where("status","==",type);
-  
-             jobRef.get()
-  .then(snapshot => {
-    snapshot.forEach(doc => {
-        let job = doc.data();
-        job.id = doc.id;
-      jobs.push(job)
-    });
-    console.log(jobs)
-    dispatch({ type: "listJobs", payload: {jobs} });
-    dispatch({ type: 'clearError'});
-
-  })
-  .catch(err => {
-    console.log('Error getting documents', err);
-  });
-         }
+            let rjRef = firestore.collection('rejectedJobs').doc(user.uid);
+          
+            try {
+              const ajobs = await jobRef.get()
+              const rjarray = await rjRef.get();
+              const rejected= rjarray.data().rjobs
+              
+              ajobs.forEach(job => {
+                
+                 if(!rejected.includes(job.id))
+                    jobs.push({...job.data(), id : job.id})
+              });
+              console.log(jobs)
+              dispatch({ type: "listJobs", payload: {jobs} });
+              dispatch({ type: 'clearError'});
+                   // console.log("end")
+              }
+              catch (err) {
+                console.log(err);
+                dispatch({ type: 'setError' , 
+                payload : {
+                            msg : err.message, 
+                            status : "error" , 
+                            id: err.code
+                          }
+                        })
+              } 
+          }
          else{
              console.log('error')
          }
@@ -212,4 +218,135 @@ export const acceptJob = (job) => async (dispatch,getState) => {
        });
      
       
+};
+
+// quit job
+export const quitJob = (job) => async (dispatch,getState) => {
+  console.log("quitting------------------job")
+  // const state = getState();
+
+   var user = firebase.auth().currentUser;
+      if(user){
+           
+            // job.userid = user.uid
+            job.status = "open"
+            job.acceptedOn = null
+            // console.log(job)
+            job.acceptedBy =null
+          
+            // console.log(job)
+            firestore.collection('jobs').doc(job.id).set(job)
+            .then((res) => {
+                console.log(res)
+                 dispatch({ type: "QuitJob", payload: {job} });
+                 dispatch({ type: 'clearError'});
+             }).catch(err => {
+               console.log(err);
+               dispatch({ type: 'setError' , 
+               payload : {
+                    msg : err.message, 
+                    status : "error" , 
+                    id: err.code
+                }
+             });
+   
+        });
+       }
+       
+       else // user is undefined if no user signed in
+       dispatch({ type: 'setError' , 
+       payload : {
+           msg : "", 
+           status : "error" , 
+           id: 77889}
+       });
+     
+      
+};
+
+
+
+// done job
+export const doneJob = (job) => async (dispatch,getState) => {
+  console.log("done------------------job")
+  // const state = getState();
+
+   var user = firebase.auth().currentUser;
+      if(user){
+           
+            // job.userid = user.uid
+            job.status = "done"
+            job.doneAt = Date.now()
+            console.log(job)
+            job.doneBy = user.uid
+          
+            console.log(job)
+            firestore.collection('jobs').doc(job.id).set(job)
+            .then((res) => {
+                console.log(res)
+                 dispatch({ type: "DoneJob", payload: {job} });
+                 dispatch({ type: 'clearError'});
+             }).catch(err => {
+               console.log(err);
+               dispatch({ type: 'setError' , 
+               payload : {
+                    msg : err.message, 
+                    status : "error" , 
+                    id: err.code
+                }
+             });
+   
+        });
+       }
+       
+       else // user is undefined if no user signed in
+       dispatch({ type: 'setError' , 
+       payload : {
+           msg : "", 
+           status : "error" , 
+           id: 77889}
+       });
+     
+      
+};
+
+// reject job
+export const rejectJob = (job) => async (dispatch) => {
+  console.log("Rejected------------------job")
+  // const state = getState();
+  var user = firebase.auth().currentUser;
+  if(user){
+       
+  
+        // firestore.collection('Rejectedjobs').doc(user.uid).set(job.id)
+        var userRef = firestore.collection("rejectedJobs").doc(user.uid);
+
+// Atomically add a new region to the "regions" array field.
+          userRef.update({
+              rjobs: firebaser.firestore.FieldValue.arrayUnion(job.id)
+          }).then((res) => {
+            console.log(res)
+             dispatch({ type: "RejectJob", payload: {job} });
+             dispatch({ type: 'clearError'});
+          }).catch(err => {
+           console.log(err);
+           dispatch({ type: 'setError' , 
+           payload : {
+                msg : err.message, 
+                status : "error" , 
+                id: err.code
+            }
+            });
+
+          });
+   }
+   
+   else // user is undefined if no user signed in
+   dispatch({ type: 'setError' , 
+   payload : {
+       msg : "", 
+       status : "error" , 
+       id: 77889}
+   });
+  
 };

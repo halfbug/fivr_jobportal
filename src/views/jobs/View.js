@@ -11,7 +11,8 @@ import {
   Container,
   Row,
   Col,
-  CardTitle
+  CardTitle,
+  Badge
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.jsx";
@@ -28,14 +29,41 @@ class JobDetail extends React.Component {
     };
   }
 
-
+  componentDidMount () {
+    console.log(this.props.jobState.allJobs)
+    console.log(this.props.match.params.id)
+    let job = this.props.jobState.allJobs.filter((j)=>j.id === this.props.match.params.id)[0]
+    console.log(job)
+    if(this.state.job === "")
+    this.setState({job})
+  }
   componentDidUpdate () {
     console.log(this.props.jobState.allJobs)
     console.log(this.props.match.params.id)
     let job = this.props.jobState.allJobs.filter((j)=>j.id === this.props.match.params.id)[0]
     console.log(job)
+    if(this.state.job === "")
     this.setState({job})
   }
+
+    getStatus(status){
+      switch(status){
+        case "accepted" : 
+        return <Badge className="badge-default" pill>
+        Sheduled
+      </Badge>
+        
+        case "done" :
+        return <Badge color="success" pill>
+        Done
+      </Badge>
+        
+        default:
+        return <Badge color="info" pill>
+        Open
+      </Badge>
+      }
+    }
 
   render() {
       const {job} = this.state;
@@ -62,24 +90,8 @@ class JobDetail extends React.Component {
                 </Row>
                 <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
                   <div className="d-flex justify-content-between">
-                    <Button
-                      className="mr-4"
-                      color="info"
-                      href="#pablo"
-                      onClick={e => e.preventDefault()}
-                      size="sm"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      className="float-right"
-                      color="default"
-                      href="#pablo"
-                      onClick={e => e.preventDefault()}
-                      size="sm"
-                    >
-                      Delete
-                    </Button>
+                    <p></p>
+                    {this.getStatus(job.status)}
                   </div>
                 </CardHeader>
                 <CardBody className="pt-0 pt-md-4">

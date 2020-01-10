@@ -9,6 +9,8 @@ console.log(databaseRef)
 // const userDetailsRef = databaseRef.child("user-details");
 // console.log(userDetailsRef)
 const registerAction = (fname, lname, phone, email, password) => async dispatch => {
+  
+  
   // firebase offers us this function createUserWithEmailAndPassword
   // which will automatically create the user for us
   // it only has two arguments, the email and the password
@@ -18,6 +20,10 @@ const registerAction = (fname, lname, phone, email, password) => async dispatch 
     // then() function is used to know when the async call has ended
     // that way, we can notify our reducers that register was succesful
     .then(function(user) {
+      user.updateProfile({
+        displayName: fname+" "+lname,
+        photoURL: "default_profile.png"
+      })
       // we take the user id and it's name and we add it in our
       // user-details table
       // userDetailsRef.push().set({ userId: user.user.uid, userName: name });
