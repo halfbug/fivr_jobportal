@@ -1,10 +1,10 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import logoutAction from "../../actions/logoutAction";
+// import logoutAction from "../../actions/logoutAction";
+import {getUser} from "../../actions/userAction"
 // reactstrap components
 import {
-  Button,
   Card,
   CardHeader,
   CardBody,
@@ -25,7 +25,8 @@ class JobDetail extends React.Component {
     super(props);
 
     this.state = {
-      job : ""
+      job : "",
+      userDetail: ""
     };
   }
 
@@ -36,14 +37,44 @@ class JobDetail extends React.Component {
     console.log(job)
     if(this.state.job === "")
     this.setState({job})
+    
+//     if(this.state.job !== "" && this.state.userDetail === "" && this.props.authState.currentUser.role === "admin")
+//     this.props.getUser(this.state.job.acceptedBy)
+// if(this.props.userState.userDetail  && this.state.userDetail === "")  
+//     this.setState({userDetail: this.props.userState.userDetail})
+  
   }
-  componentDidUpdate () {
+  componentDidUpdate (prevpros,prevstate) {
     console.log(this.props.jobState.allJobs)
     console.log(this.props.match.params.id)
     let job = this.props.jobState.allJobs.filter((j)=>j.id === this.props.match.params.id)[0]
     console.log(job)
-    if(this.state.job === "")
-    this.setState({job})
+    if(this.state.job === "" )
+      this.setState({job})
+      console.log(this.state )
+     
+    if(this.state.job !== "" 
+   && this.state.userDetail === ""
+    && this.props.authState.currentUser.role === "admin"){
+      console.log("inside")
+      this.props.getUser(this.state.job.acceptedBy)
+    }
+          
+
+          console.log( prevstate)
+          console.log(prevpros.userState)
+          console.log(this.props.userState)
+      // 
+      if(this.props.userState.loaded 
+        && this.state.userDetail !== this.props.userState.userDetail
+        )
+      //   )  {
+        this.setState({userDetail: this.props.userState.userDetail})
+    
+         
+  
+    
+    
   }
 
     getStatus(status){
@@ -213,7 +244,54 @@ return duration
                     </CardBody>
                   </Card>
                 </Col>
-                
+                {(this.props.authState.currentUser.role === "admin")?
+                <Col lg="12" xl="12" className="mb-2">
+                  <Card className="card-stats mb-4 mb-xl-0">
+                    <CardBody>
+                      <Row>
+                        <div className="col">
+                          <CardTitle
+                            tag="h5"
+                            className="text-uppercase text-muted mb-0"
+                          >
+                            Detail 
+                          </CardTitle>
+                          <span className="h2 font-weight-bold mb-0"> Administration </span>
+                        </div>
+                        <Col className="col-auto">
+                          <div className="icon icon-shape bg-green text-white rounded-circle shadow">
+                            <i className="fas fa-lock" />
+                          </div>
+                        </Col>
+                      </Row>
+                      <div class=" mt-3 mb-0 text-muted text-sm">
+                        <div class="card-text">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-3 text-md-left ">Status</dt>
+                            <dd class="col-sm-9 text-md-left">{job.status}</dd>
+                          </dl>
+                          <dl class="row mb-0">
+                            <dt class="col-sm-3 text-md-left ">Aceepted By</dt>
+                            <dd class="col-sm-9 text-md-left">{this.state.userDetail?this.state.userDetail.fname+" "+this.state.userDetail.lname :"-"}</dd>
+                          </dl>
+                          <dl class="row mb-0">
+                            <dt class="col-sm-3 text-md-left ">Email</dt>
+                            <dd class="col-sm-9 text-md-left">{this.props.userState.userDetail?this.props.userState.userDetail.email:"-"} </dd>
+                          </dl>
+                          <dl class="row mb-0">
+                            <dt class="col-sm-3 text-md-left ">Phone Number</dt>
+                            <dd class="col-sm-9 text-md-left">{this.state.userDetail?this.state.userDetail.phone:"-"} </dd>
+                          </dl>
+                          <dl class="row mb-0">
+                            <dt class="col-sm-4 text-md-left ">Firebase Auth Id</dt>
+                            <dd class="col-sm-8 text-md-left">{this.state.userDetail?this.state.userDetail.userId:"-"} </dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                </Col>  
+                : ""}
               </Row>
 
                 </CardBody>
@@ -222,6 +300,8 @@ return duration
             
           </Row>
         </Container>
+
+
       </>
     );
   }
@@ -232,7 +312,7 @@ const mapStateToProps = state => ({
   ...state
 });
 const mapDispatchToProps = dispatch => ({
-  logoutAction: () => dispatch(logoutAction())
+  getUser: (uid) => dispatch(getUser(uid))
 });
 export default connect(
   mapStateToProps,

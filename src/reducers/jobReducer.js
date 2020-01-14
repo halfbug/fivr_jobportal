@@ -52,7 +52,7 @@ export default (state={
                         };
 
             case "listJobs":
-                    console.log("getting################################# ", action.payload);
+                    // console.log("getting################################# ", action.payload);
                     console.log(action.payload);
                     return {
                     ...state,

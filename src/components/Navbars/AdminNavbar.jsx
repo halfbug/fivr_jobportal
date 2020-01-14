@@ -61,7 +61,8 @@ class AdminNavbar extends React.Component {
                     </span>
                     <Media className="ml-2 d-none d-lg-block">
                       <span className="mb-0 text-sm font-weight-bold">
-                        {this.props.authState? this.props.authState.currentUser.displayName : ""}
+                        {//this.props.authState? this.props.authState.currentUser.displayName : ""
+                        }
                       </span>
                     </Media>
                   </Media>

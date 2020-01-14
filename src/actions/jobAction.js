@@ -58,18 +58,28 @@ export const listJobs = (type) => async (dispatch, getState) => {
          if(user){
              console.log(user);
             var jobs=[];
-            let jobRef = firestore.collection('jobs').where("status","==",type);
+            let jobRef = null;
             let rjRef = firestore.collection('rejectedJobs').doc(user.uid);
-          
+            if(state.authState.currentUser.role === "client" && type !== "open")
+            jobRef = firestore.collection('jobs').where("status","==",type).where("acceptedBy","==",user.uid)
+            else 
+            jobRef = firestore.collection('jobs').where("status","==",type);
+
             try {
               const ajobs = await jobRef.get()
               const rjarray = await rjRef.get();
-              const rejected= rjarray.data().rjobs
-              
+              const rejected= rjarray.data()?rjarray.data().rjobs : [];
+              // const adminck = await user.getIdTokenResult()
+              // // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+              // console.log(adminck)
               ajobs.forEach(job => {
                 
                  if(!rejected.includes(job.id))
                     jobs.push({...job.data(), id : job.id})
+                 else if(state.authState.currentUser.role === "admin")
+                 {
+                   jobs.push({...job.data(), id : job.id})
+                 }   
               });
               console.log(jobs)
               dispatch({ type: "listJobs", payload: {jobs} });

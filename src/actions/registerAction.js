@@ -32,7 +32,9 @@ const registerAction = (fname, lname, phone, email, password) => async dispatch 
         role : "client",
           fname,
           lname,
-          phone 
+          phone,
+          email,
+          joinedAt : Date.now(),
           }).then(() => {
              // register was succesful by sending true
               dispatch({ type: "register", payload: true });

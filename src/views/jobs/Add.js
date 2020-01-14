@@ -351,11 +351,11 @@ class AddJob extends React.Component {
                             >
                               Regular Teacher Name
                             </label>
-                            <Input
+                            <AvInput
                               className="form-control-alternative"
                               defaultValue=""
                               name="regularTeacherName"
-                              placeholder="Mrs. White Topssy"
+                              placeholder="Mrs.White Topssy"
                               type="text"
                               value={regularTeacherName}
                               onChange={this.handleChange}
@@ -389,7 +389,7 @@ class AddJob extends React.Component {
                               className="form-control-label"
                               htmlFor="input-country"
                             >Notes</label>
-                        <Input
+                        <AvInput
                           
                           className="form-control-alternative"
                           placeholder="A few words about the topic to teach ..."
